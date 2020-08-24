@@ -39,17 +39,28 @@ class gui:
         #*  Button components and the frame to hold them
         buttonFrame = tk.Frame(self.root, background='#cce0ff', border=1)
         add = tk.Button(buttonFrame, text='Add', command=lambda: self.add())
+        edit = tk.Button(buttonFrame, text='Edit', command=lambda: self.edit())
         delete = tk.Button(buttonFrame, text='Delete', command=lambda: self.remove())
         clear = tk.Button(buttonFrame, text='Clear List', command=lambda: self.clear())
         clearSelected = tk.Button(buttonFrame, text='Deselect', command=lambda: self.todo.selection_clear(0, END))
 
         #*  Pack the GUI components into their parents
         add.pack(fill=tk.X, padx=5, pady=2)
-        delete.pack(fill=tk.X, padx=5, pady=8)
-        clear.pack(fill=tk.X, padx=5, pady=2)
-        clearSelected.pack(fill=tk.X, padx=5, pady=8)
+        edit.pack(fill=tk.X, padx=5, pady=8)
+        delete.pack(fill=tk.X, padx=5, pady=2)
+        clear.pack(fill=tk.X, padx=5, pady=8)
+        clearSelected.pack(fill=tk.X, padx=5, pady=2)
         buttonFrame.pack(fill=tk.Y, side=tk.LEFT)
         self.todo.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+
+    #   Command for the edit button
+    def edit(self):
+        if self.todo.curselection():
+            item = self.todo.get(self.todo.curselection()[0]).replace(' - ', '')
+            newItem = askstring('Enter Item', 'Change item to:', initialvalue=item)
+
+            self.database.set(table='list', value=newItem, item=item)
+            self.reset()
 
     #   Command for the add button
     def add(self):
@@ -80,6 +91,7 @@ class gui:
         self.todo.insert(self.todo.size(), '')
         self.todo.itemconfig(self.todo.size() - 1, fg="gray")
         def no_selection(event, index):
-            if str(self.todo.curselection()[0]) in str(index):
-                self.todo.selection_clear(index)
+            if len(self.todo.curselection()) != 0:
+                if str(self.todo.curselection()[0]) in str(index):
+                    self.todo.selection_clear(index)
         self.todo.bind("<<ListboxSelect>>", lambda event, index=self.todo.size() - 1: no_selection(event, self.todo.size() - 1))

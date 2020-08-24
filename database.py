@@ -24,6 +24,15 @@ class database:
         query = self.cur.fetchall()
         return query
 
+    #   SQL set call
+    #   table   -'FROM' statement
+    #   item    -'WHERE' statement
+    #   value   -'SET' statement
+    def set(self, table, item, value):
+        command = 'UPDATE ' + table + " SET item='" + str(value) + "' WHERE item='" + str(item) + "';"
+        self.cur.execute(command)
+        self.conn.commit()
+
     #   SQL DELETE call
     #   table   -'FROM' statement
     #   item    -'WHERE' statement
