@@ -43,7 +43,6 @@ class gui:
         self.menu.add_command(label='Edit', command=lambda: self.edit())
         self.menu.add_command(label='Delete', command=lambda: self.remove())
         self.menu.add_command(label='Clear List', command=lambda: self.clear())
-        self.menu.add_command(label='Deselect', command=lambda: self.todo.selection_clear(0, END))
 
         #*  Pack the GUI components
         self.todo.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
@@ -54,11 +53,9 @@ class gui:
         if not self.todo.curselection():
             self.menu.entryconfig('Edit', state=tk.DISABLED)
             self.menu.entryconfig('Delete', state=tk.DISABLED)
-            self.menu.entryconfig('Deselect', state=tk.DISABLED)
         else:
             self.menu.entryconfig('Edit', state=tk.NORMAL)
             self.menu.entryconfig('Delete', state=tk.NORMAL)
-            self.menu.entryconfig('Deselect', state=tk.NORMAL)
 
         self.menu.post(event.x_root, event.y_root)
 
