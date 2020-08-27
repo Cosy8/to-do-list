@@ -1,6 +1,6 @@
 import tkinter as tk, sys
 from tkinter.simpledialog import askstring
-from tkinter import font, END, WORD
+from tkinter import font, END, WORD, messagebox
 from autoscrollbar import autoscrollbar
 
 class gui:
@@ -10,7 +10,7 @@ class gui:
 
         self.root = tk.Tk()
         self.root.title('To-Do List')
-        self.root.geometry('350x400+1150+25')
+        self.root.geometry('+1150+25')
         self.root.protocol("WM_DELETE_WINDOW", self.root.destroy)
 
         self.display()
@@ -20,38 +20,47 @@ class gui:
     #   The main display for the program
     def display(self):
         #*  Listbox component to display the list
-        self.todo = tk.Listbox(self.root, selectmode='SINGLE', activestyle='none', relief='flat', highlightthickness=1, highlightcolor='#ffffff')
+        self.todo = tk.Listbox(self.root, width=30, selectmode='SINGLE', activestyle='none', relief='flat', highlightthickness=1, highlightcolor='#ffffff')
         self.todo.bind('<FocusOut>', lambda e: self.todo.selection_clear(0, END))
+        self.todo.bind("<Button-3>", self.showMenu)
+        self.reset()
         text = font.Font(family='Helvetica', size=12)
         self.todo.config(font=text, background='#e6f0ff')
-        self.reset()
 
         #*  Scrollbars for the Listbox component
         scrollx = autoscrollbar(self.todo, orient='horizontal')
         scrolly = autoscrollbar(self.root, orient='vertical')
 
-        #*  Configure the listbox and scrollbars
+        #*  Configure the listbox with the scrollbars
         self.todo.configure(yscrollcommand=scrolly.set)
         self.todo.configure(xscrollcommand=scrollx.set)
         scrollx.config(command=self.todo.xview)
         scrolly.config(command=self.todo.yview)
 
-        #*  Button components and the frame to hold them
-        buttonFrame = tk.Frame(self.root, background='#cce0ff', border=1)
-        add = tk.Button(buttonFrame, text='Add', command=lambda: self.add())
-        edit = tk.Button(buttonFrame, text='Edit', command=lambda: self.edit())
-        delete = tk.Button(buttonFrame, text='Delete', command=lambda: self.remove())
-        clear = tk.Button(buttonFrame, text='Clear List', command=lambda: self.clear())
-        clearSelected = tk.Button(buttonFrame, text='Deselect', command=lambda: self.todo.selection_clear(0, END))
+        #*  Commands in the menu
+        self.menu = tk.Menu(self.todo, tearoff=0)
+        self.menu.add_command(label='Add', command=lambda: self.add())
+        self.menu.add_command(label='Edit', command=lambda: self.edit())
+        self.menu.add_command(label='Delete', command=lambda: self.remove())
+        self.menu.add_command(label='Clear List', command=lambda: self.clear())
+        self.menu.add_command(label='Deselect', command=lambda: self.todo.selection_clear(0, END))
 
-        #*  Pack the GUI components into their parents
-        add.pack(fill=tk.X, padx=5, pady=2)
-        edit.pack(fill=tk.X, padx=5, pady=8)
-        delete.pack(fill=tk.X, padx=5, pady=2)
-        clear.pack(fill=tk.X, padx=5, pady=8)
-        clearSelected.pack(fill=tk.X, padx=5, pady=2)
-        buttonFrame.pack(fill=tk.Y, side=tk.LEFT)
+        #*  Pack the GUI components
         self.todo.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
+
+    #   Shows the menu on right click (event)
+    def showMenu(self, event):
+        #*  Check if an item is selected and disable/enable buttons accordingly
+        if not self.todo.curselection():
+            self.menu.entryconfig('Edit', state=tk.DISABLED)
+            self.menu.entryconfig('Delete', state=tk.DISABLED)
+            self.menu.entryconfig('Deselect', state=tk.DISABLED)
+        else:
+            self.menu.entryconfig('Edit', state=tk.NORMAL)
+            self.menu.entryconfig('Delete', state=tk.NORMAL)
+            self.menu.entryconfig('Deselect', state=tk.NORMAL)
+
+        self.menu.post(event.x_root, event.y_root)
 
     #   Command for the edit button
     def edit(self):
@@ -59,8 +68,9 @@ class gui:
             item = self.todo.get(self.todo.curselection()[0]).replace(' - ', '')
             newItem = askstring('Enter Item', 'Change item to:', initialvalue=item)
 
-            self.database.set(table='list', value=newItem, item=item)
-            self.reset()
+            if newItem:
+                self.database.set(table='list', value=newItem, item=item)
+                self.reset()
 
     #   Command for the add button
     def add(self):
@@ -78,8 +88,10 @@ class gui:
 
     #   Command for the clear button
     def clear(self):
-        self.database.truncate(table='list') #!Clear the entire list
-        self.reset()
+        #*  Ask the user for confirmation
+        if messagebox.askyesno('Are you sure?', 'Do you wish to clear the entire list?'):
+            self.database.truncate(table='list') #!Clear the entire list
+            self.reset()
 
     #   Reset the list
     def reset(self):
@@ -95,3 +107,4 @@ class gui:
                 if str(self.todo.curselection()[0]) in str(index):
                     self.todo.selection_clear(index)
         self.todo.bind("<<ListboxSelect>>", lambda event, index=self.todo.size() - 1: no_selection(event, self.todo.size() - 1))
+        self.todo.config(height=self.todo.size())
