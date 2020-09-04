@@ -10,7 +10,7 @@ class gui:
 
         self.root = tk.Tk()
         self.root.title('To-Do List')
-        self.root.geometry('+1150+25')
+        self.root.geometry('+975+25')
         self.root.protocol("WM_DELETE_WINDOW", self.root.destroy)
 
         self.display()
