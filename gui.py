@@ -10,7 +10,7 @@ class gui:
 
         self.root = tk.Tk()
         self.root.title('To-Do List')
-        self.root.geometry('+975+25')
+        self.root.geometry('250x100+975+25')
         self.root.protocol("WM_DELETE_WINDOW", self.root.destroy)
 
         self.display()
@@ -29,7 +29,7 @@ class gui:
 
         #*  Scrollbars for the Listbox component
         scrollx = autoscrollbar(self.todo, orient='horizontal')
-        scrolly = autoscrollbar(self.root, orient='vertical')
+        scrolly = autoscrollbar(self.todo, orient='vertical')
 
         #*  Configure the listbox with the scrollbars
         self.todo.configure(yscrollcommand=scrolly.set)
