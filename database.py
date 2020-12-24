@@ -1,11 +1,11 @@
 import psycopg2, os
 
 #!  Credentials set in environment variables
-HOST =  os.environ['LIST_HOST']
-PORT = os.environ['LIST_PORT']
+HOST =  os.environ['POSTGRESQL_HOST']
+PORT = os.environ['POSTGRESQL_PORT']
 DATABASE = os.environ['LIST_DATABASE']
-USER = os.environ['LIST_USER']
-PASSWORD = os.environ['LIST_PASSWORD']
+USER = os.environ['POSTGRESQL_USER']
+PASSWORD = os.environ['POSTGRESQL_PASSWORD']
 
 class database:
     def __init__(self):
