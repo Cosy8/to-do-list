@@ -4,6 +4,7 @@ import os
 
 def main():
     data = database()
+    data.info()
     gui(data)
     data.close()
 

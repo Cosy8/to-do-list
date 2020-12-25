@@ -13,6 +13,15 @@ class database:
         self.conn = psycopg2.connect(host=HOST, port=PORT, database=DATABASE, user=USER, password=PASSWORD)
         self.cur = self.conn.cursor()
 
+    def info(self):
+        print('\n*** Database information ***')
+        print('HOST:\t\t', HOST)
+        print('PORT:\t\t', PORT)
+        print('DATABASE:\t', DATABASE)
+        print('USER:\t\t', USER)
+        print('PASSWORD:\t', PASSWORD)
+        print('\n')
+
     #   SQL select call
     #   table       -'FROM' statement
     #   columns     -'SELECT' statement columns
