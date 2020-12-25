@@ -1,11 +1,18 @@
-import tkinter as tk, sys
+import sys
+import tkinter as tk
+from tkinter import END, WORD, font, messagebox
 from tkinter.simpledialog import askstring
-from tkinter import font, END, WORD, messagebox
+
 from autoscrollbar import autoscrollbar
 
+
 class gui:
-    #   database    -The database object
     def __init__(self, database):
+        """
+
+        Args:
+            database (str): The database object
+        """
         self.database = database
 
         self.root = tk.Tk()
@@ -17,8 +24,9 @@ class gui:
 
         self.root.mainloop()
 
-    #   The main display for the program
     def display(self):
+        """The main display for the program
+        """
         #*  Listbox component to display the list
         self.todo = tk.Listbox(self.root, width=30, selectmode='SINGLE', activestyle='none', relief='flat', highlightthickness=1, highlightcolor='#ffffff')
         self.todo.bind('<FocusOut>', lambda e: self.todo.selection_clear(0, END))
@@ -47,8 +55,12 @@ class gui:
         #*  Pack the GUI components
         self.todo.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
 
-    #   Shows the menu on right click (event)
     def showMenu(self, event):
+        """Shows the menu on right click
+
+        Args:
+            event (Event): The mouse event
+        """
         #*  Check if an item is selected and disable/enable buttons accordingly
         if not self.todo.curselection():
             self.menu.entryconfig('Edit', state=tk.DISABLED)
@@ -59,8 +71,9 @@ class gui:
 
         self.menu.post(event.x_root, event.y_root)
 
-    #   Command for the edit button
     def edit(self):
+        """Command for the edit button
+        """
         if self.todo.curselection():
             item = self.todo.get(self.todo.curselection()[0]).replace(' - ', '')
             newItem = askstring('Enter Item', 'Change item to:', initialvalue=item)
@@ -69,29 +82,33 @@ class gui:
                 self.database.set(table='list', value=newItem, item=item)
                 self.reset()
 
-    #   Command for the add button
     def add(self):
+        """Command for the add button
+        """
         item = askstring('Enter Item', 'Item to add:')
 
         if item:
             self.database.insert(table='list', value=item)
             self.reset()
 
-    #   Command for the remove button
     def remove(self):
+        """Command for the remove button
+        """
         if self.todo.curselection():
             self.database.delete('list', self.todo.get(self.todo.curselection()[0]).replace(' - ', ''))    #!Remove the selected item only
             self.reset()
 
-    #   Command for the clear button
     def clear(self):
+        """Command for the clear button
+        """
         #*  Ask the user for confirmation
         if messagebox.askyesno('Are you sure?', 'Do you wish to clear the entire list?'):
             self.database.truncate(table='list') #!Clear the entire list
             self.reset()
 
-    #   Reset the list
     def reset(self):
+        """Reset the list
+        """
         self.todo.delete(0, self.todo.size())
         for i in self.database.select(table='list', columns='item'):
             self.todo.insert(self.todo.size(), ' - ' + str(i[0]))
