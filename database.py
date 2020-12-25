@@ -14,6 +14,8 @@ class database:
         self.cur = self.conn.cursor()
 
     def info(self):
+        """Display the information from the database connection
+        """
         print('\n*** Database information ***')
         print('HOST:\t\t', HOST)
         print('PORT:\t\t', PORT)
