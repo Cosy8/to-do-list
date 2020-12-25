@@ -1,4 +1,6 @@
-import psycopg2, os
+import os
+
+import psycopg2
 
 #!  Credentials set in environment variables
 HOST =  os.environ['POSTGRESQL_HOST']
@@ -6,6 +8,7 @@ PORT = os.environ['POSTGRESQL_PORT']
 DATABASE = os.environ['LIST_DATABASE']
 USER = os.environ['POSTGRESQL_USER']
 PASSWORD = os.environ['POSTGRESQL_PASSWORD']
+
 
 class database:
     def __init__(self):
@@ -24,48 +27,66 @@ class database:
         print('PASSWORD:\t', PASSWORD)
         print('\n')
 
-    #   SQL select call
-    #   table       -'FROM' statement
-    #   columns     -'SELECT' statement columns
-    #   order       -'ORDER BY' statement
     def select(self, table, columns='*', order='item_id'):
+        """SQL select call
+
+        Args:
+            table (str): 'FROM' statement
+            columns (str, optional): 'SELECT' statement columns. Defaults to '*'.
+            order (str, optional): 'ORDER BY' statement. Defaults to 'item_id'.
+
+        Returns:
+            [type]: [description]
+        """
         command = 'SELECT ' + columns + ' FROM ' + str(table) + ' ORDER BY ' + order + ';'
         self.cur.execute(command)
         query = self.cur.fetchall()
         print(command)
         return query
 
-    #   SQL set call
-    #   table   -'FROM' statement
-    #   item    -'WHERE' statement
-    #   value   -'SET' statement
     def set(self, table, item, value):
-        command = 'UPDATE ' + table + " SET item='" + str(value) + "' WHERE item='" + str(item) + "';"
+        """SQL set call
+
+        Args:
+            table (str): 'FROM' statement
+            item (str): 'WHERE' statement
+            value (str): 'SET' statement
+        """
+        command = 'UPDATE ' + str(table) + " SET item='" + str(value) + "' WHERE item='" + str(item) + "';"
         self.cur.execute(command)
         self.conn.commit()
         print('\n' + command)
 
-    #   SQL DELETE call
-    #   table   -'FROM' statement
-    #   item    -'WHERE' statement
     def delete(self, table, item):
-        command = 'DELETE FROM ' + table + " WHERE item='" + str(item) + "';"
+        """SQL DELETE call
+
+        Args:
+            table (str): 'FROM' statement
+            item (str): 'WHERE' statement
+        """
+        command = 'DELETE FROM ' + str(table) + " WHERE item='" + str(item) + "';"
         self.cur.execute(command)
         self.conn.commit()
         print('\n' + command)
 
-    #   SQL TRUNCATE call
-    #   table   -'TUNCATE' statement
     def truncate(self, table):
+        """SQL TRUNCATE call
+
+        Args:
+            table (str): 'TUNCATE' statement
+        """
         command = 'TRUNCATE ' + str(table) + ';'
         self.cur.execute(command)
         self.conn.commit()
         print('\n' + command)
 
-    #   SQL INSERT call
-    #   table   -'FROM' statement
-    #   value   -'VALUES' statement
     def insert(self, table, value):
+        """SQL INSERT call
+
+        Args:
+            table (str): 'FROM' statement
+            value (str): 'VALUES' statement
+        """
         #*  Get the largest id in the database
         command = 'SELECT MAX(item_id) FROM ' + str(table) + ';'
         self.cur.execute(command)
@@ -83,8 +104,9 @@ class database:
         self.conn.commit()
         print(command)
 
-    #   Close the connection to the database
     def close(self):
+        """Close the connection to the database
+        """
         print('\nClosing connection...')
         self.conn.close()
         self.cur.close()
